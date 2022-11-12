@@ -8,6 +8,8 @@
 #define MAX_LINES 100
 #define MAX_LEN 1000
 
+int charCounter();
+
 void* routine() {
     printf("ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ\n");
 }
@@ -57,21 +59,31 @@ int main()
     for (int i = 0; i < lineCount; i++)
         printf("%s", data[i]);
 
+    //prints results of functions
+    int x1 = charCounter();
+    printf(x1);
+
     //observer thread that checks for everything is done and prints it all.
 
     return 0;
 }
 
-int wordCount(){
+/*
+int wordCount(int data[M][N],lineCount){
 //look after space " "
     int wordCount = 0;
 
-
+    int i, j;
+    for (i = 0; i < M; i++)
+      for (j = 0; j < N; j++)
+        wordCount++;
 
     return wordCount;
 }
+ */
 
-int charCount(){
+
+int charCounter(){
 
     int nc = 0;
     for(int i; i<5;i++)
