@@ -21,6 +21,8 @@ int main()
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
 
+
+
     //Declared ints
     int wordCount = 0;
     int charCount = 0;
@@ -71,17 +73,15 @@ int wordCount(){
 
 int charCount(){
 
-int charCount = 0;
-
-//look through all char
-    if (charCount == NULL) {
-         printf("There are no characters");
+    int nc = 0;
+    for(int i; i<5;i++)
+    {
+        do
+            ++nc;
+        while (getchar() != '\n');
+        printf("Character count is:%d\n", nc - 1);
+        nc = 0;
     }
-    else {
-        for(int i=0; i<=5; i++) {
+    return nc;
 
-        }
-    }
-
-    return charCount;
 }
