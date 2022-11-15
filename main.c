@@ -3,27 +3,23 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 
 #define MAX_LINES 100
 #define MAX_LEN 1000
 
-int charCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount);
-int wordCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount);
+void charCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount);
+void wordCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount);
 
 
-void* routine() {
-    printf("ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ\n");
+void* routine(void * tid) {
+
+
 }
 
 int main()
 {
-    //Multi_threading
-    pthread_t t1, t2;
-    pthread_create(&t1, NULL, &routine, NULL);
-    pthread_create(&t2, NULL, &routine, NULL);
-    pthread_join(t1, NULL);
-    pthread_join(t2, NULL);
 
     //Declared ints
     int wordCount = 0;
@@ -56,6 +52,8 @@ int main()
     // Close the file when we are done working with it.
     fclose(file);
 
+
+
     /** length of current line stored in an array */
     int lineLengthArr[MAX_LINES];
 
@@ -70,27 +68,39 @@ int main()
         //printf("\nThis is the stored info in the line array %d",lineLengthArr[i]); // check if it is stored correctly
     }
 
-    /** word counter */
+/**
     wordCount = wordCounter(data, lineLengthArr, lineCount);
     printf("\nThis is the current wordCount: %d",wordCount); //check for how it gets counted
 
-    /** char counter */
+
         charCount = charCounter(data, lineLengthArr, lineCount);
         printf("\nThis is the current charCount: %d",charCount); //check for how it gets counted
 
     //prints the result in terminal from the 2D array
     for (int i = 0; i < lineCount; i++)
         printf("\n%s", data[i]);
+*/
 
+    //Multi_threading
+    pthread_t tid0, tid1, tid2;
+    pthread_t * pthreads[] = {&tid0, &tid1, &tid2};
+
+    pthread_create(pthreads[0], NULL, &charCounter, NULL);
+    pthread_create(pthreads[1], NULL, &charCounter,NULL);
+    pthread_join(pthreads[0], NULL);
+    pthread_join(pthreads[1], NULL);
+
+
+    //Exiting Multiethreading
+    pthread_exit(NULL);
 
     //observer thread that checks for everything is done and prints it all.
-
     return 0;
 }
 
 /** functions for the different commands */
 
-int wordCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount){
+void wordCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount){
     int wordCount = 0;
     for (int i = 0; i < lineCount; i++) { //for each line
         for (int j = 0; j < lineLengthArr[i] + 1; j++) { //for each char
@@ -99,10 +109,10 @@ int wordCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int
             }
         }
     }
-    return wordCount;
+    printf("\nWordCount: %d",wordCount);
 }
 
-int charCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount){
+void charCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount){
     int charCount = 0;
     for (int i = 0; i < lineCount; i++) { //for each line
         for (int j = 0; j < lineLengthArr[i] + 1; j++) { //for each char
@@ -112,5 +122,5 @@ int charCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int
             charCount++;
         }
     }
-    return charCount;
+    printf("\nCharCount: %d",charCount);
 }
