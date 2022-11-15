@@ -8,7 +8,9 @@
 #define MAX_LINES 100
 #define MAX_LEN 1000
 
-int charCounter();
+int charCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount);
+int wordCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount);
+
 
 void* routine() {
     printf("ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ\n");
@@ -23,8 +25,6 @@ int main()
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
 
-
-
     //Declared ints
     int wordCount = 0;
     int charCount = 0;
@@ -33,8 +33,9 @@ int main()
     //sets up a 2D array
     char data[MAX_LINES][MAX_LEN];
 
+    /** Load file*/
     //makes it so we work in the right directory
-    chdir("..");
+    chdir(".."); //go one step back in directory
 
     //open text file
     FILE *file;
@@ -55,45 +56,61 @@ int main()
     // Close the file when we are done working with it.
     fclose(file);
 
+    /** length of current line stored in an array */
+    int lineLengthArr[MAX_LINES];
+
+    for (int i = 0 ; i < lineCount; i++) { //for each line
+        for (int j = 0; j < MAX_LEN; j++) { //for each char
+
+            if(data[i][j] == 0){
+                lineLengthArr[i] = j; //add current char count to the line length array
+                break;
+            }
+        }
+        //printf("\nThis is the stored info in the line array %d",lineLengthArr[i]); // check if it is stored correctly
+    }
+
+    /** word counter */
+    wordCount = wordCounter(data, lineLengthArr, lineCount);
+    printf("\nThis is the current wordCount: %d",wordCount); //check for how it gets counted
+
+    /** char counter */
+        charCount = charCounter(data, lineLengthArr, lineCount);
+        printf("\nThis is the current charCount: %d",charCount); //check for how it gets counted
+
     //prints the result in terminal from the 2D array
     for (int i = 0; i < lineCount; i++)
-        printf("%s", data[i]);
+        printf("\n%s", data[i]);
 
-    //prints results of functions
-    int x1 = charCounter();
-    printf(x1);
 
     //observer thread that checks for everything is done and prints it all.
 
     return 0;
 }
 
-/*
-int wordCount(int data[M][N],lineCount){
-//look after space " "
+/** functions for the different commands */
+
+int wordCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount){
     int wordCount = 0;
-
-    int i, j;
-    for (i = 0; i < M; i++)
-      for (j = 0; j < N; j++)
-        wordCount++;
-
+    for (int i = 0; i < lineCount; i++) { //for each line
+        for (int j = 0; j < lineLengthArr[i] + 1; j++) { //for each char
+            if (data[i][j] == 32 || data[i][j] == 0) { //checks for spacing and end of line
+                wordCount++;
+            }
+        }
+    }
     return wordCount;
 }
- */
 
-
-int charCounter(){
-
-    int nc = 0;
-    for(int i; i<5;i++)
-    {
-        do
-            ++nc;
-        while (getchar() != '\n');
-        printf("Character count is:%d\n", nc - 1);
-        nc = 0;
+int charCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount){
+    int charCount = 0;
+    for (int i = 0; i < lineCount; i++) { //for each line
+        for (int j = 0; j < lineLengthArr[i] + 1; j++) { //for each char
+            if (data[i][j] == 32) { //if you don't want to count for spaces as characters.
+                charCount--; //counter balances the ++
+            }
+            charCount++;
+        }
     }
-    return nc;
-
+    return charCount;
 }
