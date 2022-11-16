@@ -12,9 +12,14 @@
 int charCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount);
 int wordCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount);
 
+//sets up a 2D array
 char data[MAX_LINES][MAX_LEN];
 int lineLengthArr[MAX_LINES];
 int lineCount = 0;
+
+FILE *fp;
+
+pthread_mutex_t lock;
 
 /**
  * the thread itself, with pointers to the data struct.
@@ -22,6 +27,8 @@ int lineCount = 0;
  * @return
  */
 void *wordCountThread(void *args) {
+
+    pthread_mutex_lock(&lock);
 
     int wordCount = 0;
     for (int i = 0; i < lineCount; i++) { //for each line
@@ -33,11 +40,21 @@ void *wordCountThread(void *args) {
     }
     printf("Number of words %d \n", wordCount);
 
+    fprintf(fp, "Number of words %d \n", wordCount);
+
+
+    pthread_mutex_unlock(&lock);
+
+    sleep(10);
+    fputs("Test0 \n", fp);
+
     return NULL;
 
 }
 
 void *charCountThread(void *arg) {
+
+    pthread_mutex_lock(&lock);
 
     int charCount = 0;
     for (int i = 0; i < lineCount; i++) { //for each line
@@ -50,6 +67,12 @@ void *charCountThread(void *arg) {
     }
     printf("Number of chars %d \n", charCount);
 
+    fprintf(fp, "Number of chars %d \n", charCount);
+    sleep(1);
+    fputs("Test1 \n", fp);
+
+    pthread_mutex_unlock(&lock);
+
     return NULL;
 
 }
@@ -59,9 +82,6 @@ int main()
     //Declared ints
     int wordCount = 0;
     int charCount = 0;
-
-
-    //sets up a 2D array
 
 
     /** Load file*/
@@ -112,6 +132,9 @@ int main()
         printf("%s\n", data[i]);
     }
 
+    // file
+    fp = fopen("output.txt", "w");
+
     //Multi_threading
     pthread_t thread1, thread2; // creating separate threads.
 
@@ -129,6 +152,10 @@ int main()
     pthread_join(thread1, NULL);
     pthread_join(thread2, NULL);
 
+
+    fputs("Test2 \n", fp);
+
+    fclose(fp);
 
     //print staement computing what the threads have processed.
 
