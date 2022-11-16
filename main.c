@@ -49,6 +49,29 @@ void *myThread(void *arg) {
     pthread_exit(NULL);
 }
 
+void *myThread2(void *arg) {
+    thread_data *tdata=(thread_data *)arg;
+    int a=tdata->a;
+    int b=tdata->b;
+    int result=a+b;
+    tdata->result=result;
+
+    printf("\nThis is second thread speaking");
+    printf("\nWe have the same data see %d %d %d",a,b,result);
+    sleep(7);
+    printf("\nLol you thought i was done, I'm Still...");
+    sleep(2);
+    printf("\nhere. \nit's i threat 2.");
+    sleep(1);
+    printf("\nHow could you forgeeeeeeeetzzzz.");
+    sleep(3);
+    printf("\nBBBBBBBBBBBBBZZZZZZzzzzzzzz<<<<<<<");
+    sleep(4);
+    printf("\nThread 2 is DEAD!, my condolences.");
+
+    pthread_exit(NULL);
+}
+
 
 int main()
 {
@@ -110,7 +133,7 @@ int main()
     }
 
     //Multi_threading
-    pthread_t tid0; // creating separate threads.
+    pthread_t tid0, tid1; // creating separate threads.
     thread_data tdata; // creating an object of our thread data.
 
     tdata.a = wordCount; //assigning an integer value for thread data a, as wordCount.
@@ -118,13 +141,15 @@ int main()
 
     //pthread_t *pthreads[] = {&tid0}; //array containing all threads
 
-    pthread_create(&tid0, NULL, &myThread, (void*)&tdata); //starts tid0 in calling process
+    pthread_create(&tid0, NULL, &myThread, (void*)&tdata);
+    pthread_create(&tid1, NULL, &myThread2, (void*)&tdata);//starts tid0 in calling process
 
 
     /**
      * joins finished threads into main program, for all threads
      */
     pthread_join(tid0,NULL);
+    pthread_join(tid1,NULL);
 
 
     //print staement computing what the threads have processed.
