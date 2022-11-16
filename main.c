@@ -12,76 +12,57 @@
 int charCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount);
 int wordCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount);
 
-/**
- * struct containing integer data for our threads,
- */
-typedef struct thread_data {
-    int a;
-    int b;
-    int result;
-
-
-} thread_data;
+char data[MAX_LINES][MAX_LEN];
+int lineLengthArr[MAX_LINES];
+int lineCount = 0;
 
 /**
  * the thread itself, with pointers to the data struct.
  * @param arg
  * @return
  */
-void *myThread(void *arg) {
-    thread_data *tdata=(thread_data *)arg;
-    int a=tdata->a;
-    int b=tdata->b;
-    int result=a+b;
-    tdata->result=result;
+void *wordCountThread(void *args) {
 
-    sleep(1);
-    printf("\n\nPrinting words and characters from thread\n");
-    sleep(1);
-    printf("Words: %d Characters: %d",a,b);
-    sleep(1);
-    printf("\nTo make sure we sleep for 3 to add words and characters in total.");
-    sleep(3);
-    printf("\n%d",result);
-    sleep(1);
-    printf("\nAYOOOO!!");
+    int wordCount = 0;
+    for (int i = 0; i < lineCount; i++) { //for each line
+        for (int j = 0; j < lineLengthArr[i] + 1; j++) { //for each char
+            if (data[i][j] == 32 || data[i][j] == 0) { //checks for spacing and end of line
+                wordCount++;
+            }
+        }
+    }
+    printf("Number of words %d \n", wordCount);
 
-    pthread_exit(NULL);
+    return NULL;
+
 }
 
-void *myThread2(void *arg) {
-    thread_data *tdata=(thread_data *)arg;
-    int a=tdata->a;
-    int b=tdata->b;
-    int result=a+b;
-    tdata->result=result;
+void *charCountThread(void *arg) {
 
-    printf("\nThis is second thread speaking");
-    printf("\nWe have the same data see %d %d %d",a,b,result);
-    sleep(7);
-    printf("\nLol you thought i was done, I'm Still...");
-    sleep(2);
-    printf("\nhere. \nit's i threat 2.");
-    sleep(1);
-    printf("\nHow could you forgeeeeeeeetzzzz.");
-    sleep(3);
-    printf("\nBBBBBBBBBBBBBZZZZZZzzzzzzzz<<<<<<<");
-    sleep(4);
-    printf("\nTHREAD 2 IS DEAD!, MUAHAHAHAHHAHAH, MUAHHAHAHAHAHAHAH!, MUAHAHAHAHHAHAHAHAHAHHAH!.");
+    int charCount = 0;
+    for (int i = 0; i < lineCount; i++) { //for each line
+        for (int j = 0; j < lineLengthArr[i] + 1; j++) { //for each char
+            if (data[i][j] == 32) { //if you don't want to count for spaces as characters.
+                charCount--; //counter balances the ++
+            }
+            charCount++;
+        }
+    }
+    printf("Number of chars %d \n", charCount);
 
-    pthread_exit(NULL);
+    return NULL;
+
 }
-
 
 int main()
 {
     //Declared ints
     int wordCount = 0;
     int charCount = 0;
-    int lineCount = 0;
+
 
     //sets up a 2D array
-    char data[MAX_LINES][MAX_LEN];
+
 
     /** Load file*/
     //makes it so we work in the right directory
@@ -109,7 +90,7 @@ int main()
 
 
     /** length of current line stored in an array */
-    int lineLengthArr[MAX_LINES];
+
 
     for (int i = 0 ; i < lineCount; i++) { //for each line
         for (int j = 0; j < MAX_LEN; j++) { //for each char
@@ -123,33 +104,30 @@ int main()
     }
 
     //Updating counters to count from data file.
-    wordCount = wordCounter(data, lineLengthArr, lineCount);
-    charCount = charCounter(data, lineLengthArr, lineCount);
+
 
 
     //prints the result in terminal from the 2D array
     for (int i = 0; i < lineCount; i++) {
-        printf("\n%s", data[i], "\n");
+        printf("%s\n", data[i]);
     }
 
     //Multi_threading
-    pthread_t tid0, tid1; // creating separate threads.
-    thread_data tdata; // creating an object of our thread data.
-
-    tdata.a = wordCount; //assigning an integer value for thread data a, as wordCount.
-    tdata.b = charCount; //assigning an integer value for thread data b, as charCount.
+    pthread_t thread1, thread2; // creating separate threads.
 
     //pthread_t *pthreads[] = {&tid0}; //array containing all threads
 
-    pthread_create(&tid0, NULL, &myThread, (void*)&tdata);
-    pthread_create(&tid1, NULL, &myThread2, (void*)&tdata);//starts tid0 in calling process
+    pthread_create(&thread1, NULL, wordCountThread, NULL);
+    pthread_create(&thread2, NULL, charCountThread, NULL);
+
+
 
 
     /**
      * joins finished threads into main program, for all threads
      */
-    pthread_join(tid0,NULL);
-    pthread_join(tid1,NULL);
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
 
 
     //print staement computing what the threads have processed.
@@ -157,30 +135,3 @@ int main()
     return 0;
 }
 
-/** functions for the different commands */
-
-int wordCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount){
-    int wordCount = 0;
-    for (int i = 0; i < lineCount; i++) { //for each line
-        for (int j = 0; j < lineLengthArr[i] + 1; j++) { //for each char
-            if (data[i][j] == 32 || data[i][j] == 0) { //checks for spacing and end of line
-                wordCount++;
-            }
-        }
-    }
-    return wordCount;
-}
-
-
-int charCounter(char data[MAX_LINES][MAX_LEN], int lineLengthArr[MAX_LINES], int lineCount){
-    int charCount = 0;
-    for (int i = 0; i < lineCount; i++) { //for each line
-        for (int j = 0; j < lineLengthArr[i] + 1; j++) { //for each char
-            if (data[i][j] == 32) { //if you don't want to count for spaces as characters.
-                charCount--; //counter balances the ++
-            }
-            charCount++;
-        }
-    }
-    return charCount;
-}
