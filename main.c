@@ -67,7 +67,7 @@ void *myThread2(void *arg) {
     sleep(3);
     printf("\nBBBBBBBBBBBBBZZZZZZzzzzzzzz<<<<<<<");
     sleep(4);
-    printf("\nThread 2 is DEAD!, my condolences.");
+    printf("\nTHREAD 2 IS DEAD!, MUAHAHAHAHHAHAH, MUAHHAHAHAHAHAHAH!, MUAHAHAHAHHAHAHAHAHAHHAH!.");
 
     pthread_exit(NULL);
 }
